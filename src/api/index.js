@@ -3,11 +3,16 @@
  * 函数的返回值依然是 promise 对象
  */
 import ajax from './ajax'
+const BASE_URL = '/cloudPublish'
 
 // 1.用户名密码验证验证码登录
-// reqLogin = (userName, password, checkCode)是对应参数的值比如 18022302572 12345 876f
-//{userName, password, checkCode} 相当于 {userName: userName, password: password, checkCode: checkCode}
-export const reqLogin = (userName, password, checkCode) => ajax(`/taoping/taopingController/login`, {userName, password, checkCode}, 'POST');
+export const reqUserInfo = ({userName, password, checkCode}) => ajax(BASE_URL+`/taoping/taopingController/login`, {userName, password, checkCode}, 'POST');
 
-// 2.获取一次性验证码
-export const reqCHeckCode = () => ajax(`/getCheckCode`);
+//2.获取用户信息
+//export const reqUserInfo = () => ajax(`${BASE_URL}taoping/taopingController/getUserInfo`);
+
+//3.获取所有的终端城市
+export const reqDeviceCities = () => ajax(`${BASE_URL}/taoping/taopingController/getCountryIndex`);
+
+//4.根据城市获取终端信息
+export const reqDevicesByCity = ({city}) => ajax(`${BASE_URL}/taoping/taopingController/getCityIndexPage`, {city});

@@ -19,9 +19,9 @@
                  <el-col :span="10">
                      <div class="login-wrap">
                         <h1>登录</h1>
-                        <el-form :model="loginForm" status-icon ref="loginForm" label-width="100px" class="loginForm">
-                            <el-form-item label="用户名" prop="userName">
-                                <el-input v-model.trim="loginForm.userName" autocomplete="on" placeholder="请输入用户名"></el-input>
+                        <el-form :model="loginForm" status-icon :rules="rules" ref="loginForm" label-width="100px" class="loginForm">
+                            <el-form-item label="手机号" prop="userName">
+                                <el-input type="tel" v-model.trim="loginForm.userName" autocomplete="on" placeholder="请输入手机号"></el-input>
                             </el-form-item>
                             <el-form-item label="密  码"  prop="password">
                                 <el-input type="password" v-model.trim="loginForm.password" placeholder="请输入密码"></el-input>
@@ -29,7 +29,7 @@
                             
                             <el-form-item label="验证码"  prop="checkCode">
                                 <el-input v-model.trim="loginForm.checkCode" placeholder="请输入验证码" class="check-code"></el-input>
-                                <img class="code-img" :src="checkCodeUrl" title="点击更换" @click="createAuthCode()"/>
+                                <img class="code-img" src="/cloudPublish/getCheckCode" alt="captcha" @click="getCaptcha" ref="captcha"/>
                             </el-form-item>
                             <el-form-item>
                                 <el-button type="primary" @click="submitForm()">登录</el-button>
@@ -52,42 +52,56 @@ export default {
         Footer
     },
     data () {
+        var validatUserName = (rule, value, callback) => {
+            if (!(/^1\d{10}$/.test(value))) {
+                callback(new Error('手机号格式不正确!'));
+            }else {
+                callback();
+            }
+        };
         return {
             loginForm: {
-                userName: '',
-                password: '',
-                checkCode: ''
+                userName: '', //用户名/手机号
+                password: '', //密码
+                checkCode: '' //验证码
             },
-            checkCodeUrl: 'https://120.79.90.12/cloudPublish/getCheckCode'
+            rules: { // 表单验证规则
+                userName: [
+                    { required: true, message: '请输入手机号', trigger: 'blur' },
+                    { validator: validatUserName, trigger: 'blur' }
+                ],
+                password: [
+                    { required: true, message: '请输入密码', trigger: 'blur' },
+                ],
+                checkCode: [
+                    { required: true, message: '请输入验证码', trigger: 'blur' },
+                ]
+            },
+            checkCodeUrl:  ''
         }
     },
-
+    //测试接口
+    mounted () {
+        //this.$store.dispatch('getDeviceCity');
+        //const city = '深圳市';
+        //this.$store.dispatch('getDevicesInfo', {city});
+    },
     methods: {
         /*
          * 更新验证码 
          */
-        createAuthCode () {
+        getCaptcha () {
+            // 每次指定的src要不一样
+           this.$refs.captcha.src = '/cloudPublish/getCheckCode?r='+ Math.random()
            this.loginForm.checkCode = '';
-           this.checkCodeUrl = this.checkCodeUrl+'?r='+ Math.random();
         },
         /**
          * 请求登录
          */
-        submitForm (){
-            const url = '/api/taoping/taopingController/login' ;
-            let params = {};
-            params.userName = this.loginForm.userName;
-            params.password = md5.hex(this.loginForm.password);
-            params.checkCode = this.loginForm.checkCode;
-            
-
-            // 发送ajax 请求
-            this.$axios.post(url,this.$qs.stringify(params)).then(response => {
-                window.console.log(response.data) // 得到返回结果数据
-            })
-            .catch(error => {
-                window.console.log(error.message)
-            })
+        async submitForm (){
+            let {userName, password, checkCode} = this.loginForm;
+            password = md5.hex(password);
+            this.$store.dispatch('getUserInfo', {userName, password, checkCode});
         },
         /**
          * 跳转注册页面
