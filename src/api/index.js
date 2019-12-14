@@ -6,7 +6,7 @@ import ajax from './ajax'
 const BASE_URL = '/cloudPublish'
 
 // 1.用户名密码验证验证码登录
-export const reqUserInfo = ({userName, password, checkCode}) => ajax(BASE_URL+`/taoping/taopingController/login`, {userName, password, checkCode}, 'POST');
+export const reqLogin = ({userName, password, checkCode}) => ajax(BASE_URL+`/taoping/taopingController/login`, {userName, password, checkCode}, 'POST');
 
 //2.获取用户信息
 //export const reqUserInfo = () => ajax(`${BASE_URL}taoping/taopingController/getUserInfo`);

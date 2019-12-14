@@ -1,16 +1,14 @@
 <template>
   <div>
-     <!-- <Index/> -->
-     <Login/>
+    <router-view/>
+     <Index/>
   </div>
 </template>
 <script>
-// import Index from '@/views/Index.vue'
-import Login from '@/views/Login.vue'
+import Index from '@/views/Index.vue'
 export default {
   components:{
-    // Index,
-    Login
+     Index
   }
 }
 </script>

@@ -32,7 +32,7 @@
                                 <img class="code-img" src="/cloudPublish/getCheckCode" alt="captcha" @click="getCaptcha" ref="captcha"/>
                             </el-form-item>
                             <el-form-item>
-                                <el-button type="primary" @click="submitForm()">登录</el-button>
+                                <el-button type="primary" @click="submitLogin()">登录</el-button>
                                 <el-button @click="register()">注册</el-button>
                             </el-form-item>
                         </el-form>
@@ -46,7 +46,8 @@
 </template>
 <script>
 import Footer from '../components/Footer'
-import md5 from 'js-md5';
+import md5 from 'js-md5'
+import {reqLogin} from '../api' //这里必须要加{}
 export default {
     components: {
         Footer
@@ -98,10 +99,20 @@ export default {
         /**
          * 请求登录
          */
-        async submitForm (){
+        async submitLogin (){
             let {userName, password, checkCode} = this.loginForm;
             password = md5.hex(password);
-            this.$store.dispatch('getUserInfo', {userName, password, checkCode});
+            const res = await reqLogin({userName, password, checkCode});
+            if(res.result == 0){
+                const user = res.data;
+                //将user保存到vuex的state中
+                this.$store.dispatch('recordUser', user);
+                //跳转至首页
+                this.$router.replace('/index');
+            }else{
+                this.getCaptcha();
+            }
+           // this.$store.dispatch('login', {userName, password, checkCode});
         },
         /**
          * 跳转注册页面
@@ -123,6 +134,9 @@ export default {
     height: 75px;
     line-height: 75px;
     margin: 0 auto;
+    >img {
+        vertical-align: middle;
+    }
 }
 .section {
     width: 100%;

@@ -24,7 +24,10 @@ const routes = [
     redirect: '/login'
   }
 ]
-
+const originalPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location) {
+    return originalPush.call(this, location).catch(err => err);
+};//可能是引入了elementUI的原因，不重写此方法在引用路由时会报错Navigating to current location ("/xxxx")
 const router = new VueRouter({
   routes
 })
