@@ -8,27 +8,37 @@ import {
     
 } from './mutation-types'
 import {
-    reqLogin, 
+    // reqLogin, 
+    reqUserInfo,
     reqDeviceCities,
     reqDevicesByCity
 } from '../api'
 
 export default {
     
-    //异步登陆
-    async login({commit},{userName, password, checkCode}) {
-        //发送异步ajax请求
-        const result = await reqLogin({userName, password, checkCode})
+    // //异步登陆
+    // async login({commit},{userName, password, checkCode}) {
+    //     //发送异步ajax请求
+    //     const result = await reqLogin({userName, password, checkCode})
+    //     //提交一个mutation
+    //     if(result.result === 0) {
+    //         const userInfo = result.data
+    //         commit(RECEIVE_USER_INFO, {userInfo})
+    //     }
+    // },
+    //异步获取当前登陆的用户信息
+    async getUserInfo({commit}){
+        const result = await reqUserInfo()
         //提交一个mutation
         if(result.result === 0) {
             const userInfo = result.data
             commit(RECEIVE_USER_INFO, {userInfo})
         }
     },
-    //同步记录用户信息
-    recordUser({commit},userInfo){
-        commit(RECEIVE_USER_INFO, {userInfo})
-    },
+    // //同步记录用户信息
+    // recordUser({commit},userInfo){
+    //     commit(RECEIVE_USER_INFO, {userInfo})
+    // },
     //异步获取终端城市数组
     async getDeviceCity({commit}) {
         //发送异步ajax请求

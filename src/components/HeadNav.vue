@@ -29,7 +29,7 @@
                         <img src="../assets/img/avator-default.png" alt="用户头像">
                     </div>
                     <div class="avator-info">
-                        <p>屏主账号</p>
+                        <p> {{userInfo.nickname}}</p>
                         <p class="balance">余额：￥8568.83元</p>
                     </div>
                     <div class="iconfont icon-menu_logo" @click="showMenuDropdown = !showMenuDropdown"></div>
@@ -52,12 +52,11 @@
 </template>
 
 <script>
-import Vue from 'vue'
-// collapse 展开折叠
-import CollapseTransition from 'element-ui/lib/transitions/collapse-transition';
-
-Vue.component(CollapseTransition.name, CollapseTransition)
+import {mapState} from 'vuex'
 export default {
+  computed: {
+      ...mapState(['userInfo'])
+    },
   data(){
     return {
       showMenuDropdown: false
@@ -146,7 +145,7 @@ export default {
             }
             .menu-dropdown {
               position: absolute;
-              top: 68px;
+              top: 75px;
               width: 100%;
               max-height: 350px;
               box-shadow: 5px 0px 26px rgba(123,123,123,0.2);

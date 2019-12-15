@@ -9,7 +9,7 @@ const BASE_URL = '/cloudPublish'
 export const reqLogin = ({userName, password, checkCode}) => ajax(BASE_URL+`/taoping/taopingController/login`, {userName, password, checkCode}, 'POST');
 
 //2.获取用户信息
-//export const reqUserInfo = () => ajax(`${BASE_URL}taoping/taopingController/getUserInfo`);
+export const reqUserInfo = () => ajax(`${BASE_URL}taoping/taopingController/getUserInfo`);
 
 //3.获取所有的终端城市
 export const reqDeviceCities = () => ajax(`${BASE_URL}/taoping/taopingController/getCountryIndex`);

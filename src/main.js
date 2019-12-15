@@ -1,14 +1,14 @@
 import Vue from 'vue'
 import './registerServiceWorker'
-import ElementUI from 'element-ui'
+import './plugins/element.js'
+// 导入全局样式表
+import './assets/css/global.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import router from './router'
 import store from './store'
 import App from './App.vue'
 import axios from 'axios';
 import qs from 'qs';
-
-Vue.use(ElementUI);
 Vue.config.productionTip = true;
 
 axios.defaults.withCredentials = false;

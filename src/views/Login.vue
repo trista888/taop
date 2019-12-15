@@ -19,20 +19,20 @@
                  <el-col :span="10">
                      <div class="login-wrap">
                         <h1>登录</h1>
-                        <el-form :model="loginForm" status-icon :rules="rules" ref="loginForm" label-width="100px" class="loginForm">
+                        <el-form :model="loginForm" status-icon :rules="rules" ref="loginFormRef" label-width="100px" class="loginForm">
                             <el-form-item label="手机号" prop="userName">
-                                <el-input type="tel" v-model.trim="loginForm.userName" autocomplete="on" placeholder="请输入手机号"></el-input>
+                                <el-input type="tel"  placeholder="请输入手机号" v-model.trim="loginForm.userName" autocomplete="on"></el-input>
                             </el-form-item>
                             <el-form-item label="密  码"  prop="password">
-                                <el-input type="password" v-model.trim="loginForm.password" placeholder="请输入密码"></el-input>
+                                <el-input type="password" placeholder="请输入密码" v-model.trim="loginForm.password"></el-input>
                             </el-form-item>
                             
                             <el-form-item label="验证码"  prop="checkCode">
-                                <el-input v-model.trim="loginForm.checkCode" placeholder="请输入验证码" class="check-code"></el-input>
-                                <img class="code-img" src="/cloudPublish/getCheckCode" alt="captcha" @click="getCaptcha" ref="captcha"/>
+                                <el-input class="check-code" placeholder="请输入验证码" v-model.trim="loginForm.checkCode" @keyup.enter.native="submitLogin('loginForm')" ></el-input>
+                                <img class="code-img" src="/cloudPublish/getCheckCode" alt="captcha" ref="captchaRef" @click="getCaptcha" />
                             </el-form-item>
                             <el-form-item>
-                                <el-button type="primary" @click="submitLogin()">登录</el-button>
+                                <el-button type="primary" @click="submitLogin('loginFormRef')">登录</el-button>
                                 <el-button @click="register()">注册</el-button>
                             </el-form-item>
                         </el-form>
@@ -55,15 +55,15 @@ export default {
     data () {
         var validatUserName = (rule, value, callback) => {
             if (!(/^1\d{10}$/.test(value))) {
-                callback(new Error('手机号格式不正确!'));
+                callback(new Error('手机号格式不正确!'))
             }else {
-                callback();
+                callback()
             }
         };
         return {
             loginForm: {
-                userName: '', //用户名/手机号
-                password: '', //密码
+                userName: '18022302572', //用户名/手机号
+                password: '123456', //密码
                 checkCode: '' //验证码
             },
             rules: { // 表单验证规则
@@ -93,25 +93,36 @@ export default {
          */
         getCaptcha () {
             // 每次指定的src要不一样
-           this.$refs.captcha.src = '/cloudPublish/getCheckCode?r='+ Math.random()
-           this.loginForm.checkCode = '';
+           this.$refs.captchaRef.src = '/cloudPublish/getCheckCode?r='+ Math.random()
+           this.loginForm.checkCode = ''
         },
         /**
          * 请求登录
          */
-        async submitLogin (){
-            let {userName, password, checkCode} = this.loginForm;
-            password = md5.hex(password);
-            const res = await reqLogin({userName, password, checkCode});
-            if(res.result == 0){
-                const user = res.data;
-                //将user保存到vuex的state中
-                this.$store.dispatch('recordUser', user);
+        async submitLogin (formName){
+            this.$refs[formName].validate(async valid=> {
+            if (valid) {
+                let {userName, password, checkCode} = this.loginForm
+                password = md5.hex(password)
+                const res = await reqLogin({userName, password, checkCode})
+                if(res.result == 0){
+                    // const user = res.data
+                    //将user保存到vuex的state中
+                    //this.$store.dispatch('recordUser', user)
+                    window.sessionStorage.setItem('token','aaaaaaaa')
+                    this.$store.dispatch('getUserInfo')
+                    this.$message.success('登陆成功')
                 //跳转至首页
-                this.$router.replace('/index');
-            }else{
-                this.getCaptcha();
+                this.$router.replace('/home')
+                }else{
+                    this.getCaptcha();
+                    return this.$message.error(res.note)
+                }
+            } else {
+                return false;
             }
+            });
+            
            // this.$store.dispatch('login', {userName, password, checkCode});
         },
         /**
@@ -123,7 +134,7 @@ export default {
     }
 }
 </script>
-<style lang="less">
+<style lang="less" scoped> 
 .container {
     width: 100%;
     height: 100%;;
@@ -179,6 +190,10 @@ export default {
                         text-align: center;
                         font-size: 16px;
                         color: #333;
+                        &::before {
+                            content: '';
+                            color: #fff;
+                        }
                     }
                     .el-form-item__content {
                         text-align: left;
